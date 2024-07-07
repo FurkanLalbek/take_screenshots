@@ -16,11 +16,11 @@ class Take_Screenshot:
         self.region = None
         self.camera = None
         self.target_fps = 2
-        self.adet = 0
-        self.save_dir = "ekrankaydi"
+        self.count = 0
+        self.save_dir = "screenshots"
         self.config_file = "config.json"
         self.i = 1
-        self.kayit = True
+        self.save = True
 
     def list_visible_windows(self):
         def winEnumHandler(hwnd, ctx):
@@ -68,7 +68,8 @@ class Take_Screenshot:
                 time.sleep(random.uniform(0.1, 0.5))
     
     def capture_screenshots(self):
-        os.makedirs(self.save_dir, exist_ok=True)
+        if self.save:
+            os.makedirs(self.save_dir, exist_ok=True)
         while True:
             self.window = pyautogui.getWindowsWithTitle(self.selected_window)
             if self.window and self.window[0].isActive:
@@ -76,13 +77,13 @@ class Take_Screenshot:
                 screenshot = self.camera.get_latest_frame()
                 screenshot = cv2.cvtColor(screenshot, cv2.COLOR_BGR2RGB)
                 
-                if self.kayit:
+                if self.save:
                     cv2.imwrite(f"{self.save_dir}/{self.i}.png", screenshot)
 
                 if self.stop_program():
                     break
-                if self.adet and self.i == self.adet:
-                    print(f"{self.adet} adet ekran görüntüsü alındı.")
+                if self.count and self.i == self.count:
+                    print(f"{self.count} adet ekran görüntüsü alındı.")
                     break
                 self.i += 1
             else:
@@ -99,7 +100,7 @@ class Take_Screenshot:
     def save_config(self):
         with open(self.config_file, "w") as f:
             json.dump({"target_fps": self.target_fps,
-                       "adet": self.adet,
+                       "count": self.count,
                        "save_dir": self.save_dir,
                        "selected_window": self.selected_window},
                       f, indent=4)
@@ -108,7 +109,7 @@ class Take_Screenshot:
         with open(self.config_file, "r") as f:
             config = json.load(f)
             self.target_fps = config["target_fps"]
-            self.adet = config["adet"]
+            self.count = config["count"]
             self.save_dir = config["save_dir"]
             self.selected_window = config["selected_window"]
     
@@ -131,8 +132,8 @@ class Take_Screenshot:
                     print("Lütfen 'e' veya 'h' giriniz.")
 
         self.target_fps = get_int_input("FPS değeri giriniz: ")
-        self.adet = get_int_input("Kaç adet ekran görüntüsü almak istersiniz? 0 = Sonsuz: ")
-        self.kayit = get_bool_input("Ekran görüntülerini kaydetmek istiyor musunuz? (e/h): ")
+        self.count = get_int_input("Kaç adet ekran görüntüsü almak istersiniz? 0 = Sonsuz: ")
+        self.save = get_bool_input("Ekran görüntülerini kaydetmek istiyor musunuz? (e/h): ")
         self.select_window()
     
     def run(self):
