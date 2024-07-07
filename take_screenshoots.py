@@ -159,4 +159,5 @@ class Take_Screenshot:
         self.capture_screenshots()
     
 if __name__ == "__main__":
+    print("https://github.com/FurkanLalbek")
     Take_Screenshot().run()
